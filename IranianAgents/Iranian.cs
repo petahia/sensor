@@ -1,0 +1,120 @@
+namespace Sensors
+{
+    
+    internal class Iranian
+    {
+
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<string> Sensors { get; set; }
+        private List<Sensor> Weaknesses { get; set; }
+        public RankAgentEnum Rank { get; set; }
+        public int rankValue { get; set; }
+        public Dictionary<string, int> sensorStatus { get; set; } 
+
+
+        // constractor
+        public Iranian(RankAgentEnum rank)
+        {
+            this.Rank = rank;
+            rankValue = (int)Rank;
+            this.Weaknesses = AddSensorsToWeaknesses();
+            this.sensorStatus = setDictsensorStatus();
+        }
+
+        // set name
+        public void setName(string name)
+        {
+            this.Name = name;
+        }
+
+        // set weaknesses        
+        public List<Sensor> AddSensorsToWeaknesses()
+        {
+            Weaknesses = new List<Sensor>();
+            for (int sensors = 0; sensors < rankValue; sensors++)
+            {
+                Sensor sensor = new Sensor();
+                sensor.Type = (SensorType)Enum.GetValues(typeof(SensorType)).GetValue(getIndex(rankValue));
+                Weaknesses.Add(sensor);
+            }
+            return Weaknesses;
+        }
+
+        // get random number for index
+        public static int getIndex(int limit)
+        {
+            Random random = new Random();
+            return random.Next(0, limit);
+        }
+        
+        // set the dict we goona work on 
+        public Dictionary<string,int> setDictsensorStatus()
+        {
+            Dictionary<string, int> setdict = new Dictionary<string, int>();
+            foreach (var sens in Weaknesses)
+            {
+                if (setdict.ContainsKey(sens.Type.ToString()))
+                {
+                    setdict[sens.Type.ToString()]++;
+                }
+                else
+                {
+                    setdict[sens.Type.ToString()] = 1;
+                }
+            }
+            return setdict;
+
+        }
+
+        // check the dictionary
+        public int GetMatchCount(string sensorType)
+                {
+                    foreach(KeyValuePair<string, int> sens in sensorStatus)
+                    {
+                        if (sens.Key == sensorType && sensorStatus[sens.Key] > 0)
+                        {
+                            sensorStatus[sens.Key] -= 1;
+                            return 1;
+                        }
+                    }
+                    return 0;
+                    
+                }
+
+
+        // testing
+        public void showdict()
+        {
+                foreach (KeyValuePair<string, int> sens in sensorStatus)
+                {
+                    Console.WriteLine(sens.Key.ToString());
+                    Console.WriteLine(sens.Value.ToString());
+                }
+        }
+
+        // for testing
+        public void ShowWeaknesses()
+        {
+            Console.WriteLine("Agent Weaknesses:");
+            foreach (var sensor in Weaknesses)
+            {
+                Console.WriteLine(sensor.Type);
+            }
+        }
+
+        public enum RankAgentEnum
+        {
+            Foot_Soldier = 2,
+            Squad_Leader = 4,
+            Senior_Commander = 6,
+            Organization_Leader = 8
+        }
+
+
+
+        
+
+
+        }
+}
